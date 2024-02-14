@@ -9,8 +9,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - "${JELLYFIN_CONFIG_HOME}:/config"
-      - "${JELLYFIN_TVSHOW_HOME}:/data/tvshows"
-      - "${JELLYFIN_MOVIE_HOME}:/data/movies"
+      - tv:/data/tvshows
+      - movies:/data/movies
     ports:
       - 8096:8096
     restart: unless-stopped
@@ -22,3 +22,16 @@ services:
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     network_mode: host
+volumes:
+  movies:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${MOVIE_HOME}
+      o: bind
+  tv:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${TVSHOW_HOME}
+      o: bind
