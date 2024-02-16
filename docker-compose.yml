@@ -24,6 +24,69 @@ services:
     network_mode: host
     depends_on:
       - jellyfin
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Etc/UTC
+    volumes:
+      - ${PROWLARR_CONFIG_HOME}:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    networks:
+      - pirate
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Etc/UTC
+    volumes:
+      - ${SONARR_CONFIG_HOME}:/config
+      - tv:/tv
+      - downloads:/downloads
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks:
+      - pirate
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Etc/UTC
+    volumes:
+      - ${RADARR_CONFIG_HOME}:/config
+      - movies:/movies
+      - downloads:/downloads
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks:
+      - pirate
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Etc/UTC
+    volumes:
+      - ${TRANSMISSION_CONFIG_HOME}:/config
+      - downloads:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+    networks:
+      - pirate
 volumes:
   movies:
     driver: local
@@ -37,3 +100,12 @@ volumes:
       type: none
       device: ${TVSHOW_HOME}
       o: bind
+  downloads:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${DOWNLOAD_HOME}
+      o: bind
+networks:
+  pirate:
+    driver: bridge
