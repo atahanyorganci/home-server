@@ -22,6 +22,8 @@ services:
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     network_mode: host
+    depends_on:
+      - jellyfin
 volumes:
   movies:
     driver: local
