@@ -30,3 +30,13 @@ variable "DATA_HOME" {
   description = "The path to the data directory where application state will be stored."
   type        = string
 }
+
+variable "CF_EMAIL" {
+  description = "Cloudflare account email."
+  type        = string
+}
+
+variable "CF_API_TOKEN" {
+  description = "Cloudflare API token."
+  type        = string
+}

@@ -4,11 +4,20 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "~> 3.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
 }
 
 provider "docker" {
   host = "unix:///var/run/docker.sock"
+}
+
+provider "cloudflare" {
+  email   = var.CF_EMAIL
+  api_key = var.CF_API_TOKEN
 }
 
 resource "docker_image" "jellyfin" {
