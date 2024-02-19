@@ -31,6 +31,11 @@ variable "TV_HOME" {
   type        = string
 }
 
+variable "DOWNLOAD_HOME" {
+  description = "The path to the download directory."
+  type        = string
+}
+
 variable "DATA_HOME" {
   description = "The path to the data directory where application state will be stored."
   type        = string
