@@ -10,3 +10,56 @@ terraform {
 provider "docker" {
   host = "unix:///var/run/docker.sock"
 }
+
+resource "docker_image" "jellyfin" {
+  name = "lscr.io/linuxserver/jellyfin:latest"
+}
+
+resource "docker_volume" "movie_home" {
+  name   = "movie-home"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = var.MOVIE_HOME
+  }
+}
+
+resource "docker_volume" "tv_home" {
+  name   = "tv-home"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = var.TV_HOME
+  }
+}
+
+resource "docker_container" "jellyfin" {
+  image = docker_image.jellyfin.image_id
+  name  = "jellyfin-tf"
+  ports {
+    internal = 8096
+    external = 8000
+  }
+  env = [
+    "TZ=${var.TZ}",
+    "PUID=${var.PUID}",
+    "PGID=${var.PGID}",
+  ]
+  volumes {
+    volume_name    = docker_volume.movie_home.name
+    read_only      = true
+    container_path = "/data/movies"
+  }
+  volumes {
+    volume_name    = docker_volume.tv_home.name
+    read_only      = true
+    container_path = "/data/tvshows"
+  }
+  volumes {
+    volume_name    = "jellyin-config"
+    host_path      = "${var.DATA_HOME}/jellyfin"
+    container_path = "/config"
+  }
+}
