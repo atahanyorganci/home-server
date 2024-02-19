@@ -16,6 +16,11 @@ variable "PGID" {
   type        = number
 }
 
+variable "DOMAIN" {
+  description = "Top level domain named shared by all applications"
+  type        = string
+}
+
 variable "MOVIE_HOME" {
   description = "The path to the movie library."
   type        = string
@@ -38,5 +43,15 @@ variable "CF_EMAIL" {
 
 variable "CF_API_TOKEN" {
   description = "Cloudflare API token."
+  type        = string
+}
+
+variable "CF_ACCOUNT_ID" {
+  description = "Cloudflare account ID."
+  type        = string
+}
+
+variable "CF_ZONE_ID" {
+  description = "Cloudflare zone ID."
   type        = string
 }
