@@ -128,4 +128,129 @@ resource "docker_container" "sonarr" {
   }
 }
 
+resource "random_password" "download_tunnel_secret" {
+  length = 64
+}
 
+resource "cloudflare_tunnel" "download_tunnel" {
+  name       = "Arr Stack"
+  account_id = var.CF_ACCOUNT_ID
+  secret     = base64sha256(random_password.download_tunnel_secret.result)
+}
+
+resource "cloudflare_record" "prowlarr" {
+  zone_id = var.CF_ZONE_ID
+  name    = "indexer"
+  value   = cloudflare_tunnel.download_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_access_application" "prowlarr" {
+  zone_id          = var.CF_ZONE_ID
+  name             = "Access application for ${cloudflare_record.prowlarr.hostname}"
+  domain           = cloudflare_record.prowlarr.hostname
+  session_duration = "1h"
+}
+
+resource "cloudflare_access_policy" "prowlarr" {
+  application_id = cloudflare_access_application.prowlarr.id
+  zone_id        = var.CF_ZONE_ID
+  name           = "Policy for ${cloudflare_record.prowlarr.hostname}"
+  precedence     = "1"
+  decision       = "allow"
+  include {
+    email = [var.CF_EMAIL]
+  }
+}
+
+resource "cloudflare_record" "radarr" {
+  zone_id = var.CF_ZONE_ID
+  name    = "movie"
+  value   = cloudflare_tunnel.download_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_access_application" "radarr" {
+  zone_id          = var.CF_ZONE_ID
+  name             = "Access application for ${cloudflare_record.radarr.hostname}"
+  domain           = cloudflare_record.radarr.hostname
+  session_duration = "1h"
+}
+
+resource "cloudflare_access_policy" "radarr" {
+  application_id = cloudflare_access_application.radarr.id
+  zone_id        = var.CF_ZONE_ID
+  name           = "Policy for ${cloudflare_record.radarr.hostname}"
+  precedence     = "1"
+  decision       = "allow"
+  include {
+    email = [var.CF_EMAIL]
+  }
+}
+
+resource "cloudflare_record" "sonarr" {
+  zone_id = var.CF_ZONE_ID
+  name    = "tv"
+  value   = cloudflare_tunnel.download_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_access_application" "sonarr" {
+  zone_id          = var.CF_ZONE_ID
+  name             = "Access application for ${cloudflare_record.sonarr.hostname}"
+  domain           = cloudflare_record.sonarr.hostname
+  session_duration = "1h"
+}
+
+resource "cloudflare_access_policy" "sonarr" {
+  application_id = cloudflare_access_application.sonarr.id
+  zone_id        = var.CF_ZONE_ID
+  name           = "Policy for ${cloudflare_record.sonarr.hostname}"
+  precedence     = "1"
+  decision       = "allow"
+  include {
+    email = [var.CF_EMAIL]
+  }
+}
+
+resource "cloudflare_tunnel_config" "download_tunnel" {
+  tunnel_id  = cloudflare_tunnel.download_tunnel.id
+  account_id = var.CF_ACCOUNT_ID
+  config {
+    ingress_rule {
+      hostname = cloudflare_record.prowlarr.hostname
+      service  = "http://${docker_container.prowlarr.name}:9696"
+    }
+    ingress_rule {
+      hostname = cloudflare_record.radarr.hostname
+      service  = "http://${docker_container.radarr.name}:7878"
+    }
+    ingress_rule {
+      hostname = cloudflare_record.sonarr.hostname
+      service  = "http://${docker_container.sonarr.name}:8989"
+    }
+    ingress_rule {
+      service = "http_status:404"
+    }
+  }
+}
+
+
+resource "docker_container" "download_tunnel" {
+  image = docker_image.cloudflared.image_id
+  name  = "download-tunnel"
+  command = [
+    "tunnel",
+    "--no-autoupdate",
+    "run",
+    "--token",
+    cloudflare_tunnel.download_tunnel.tunnel_token,
+    cloudflare_tunnel.download_tunnel.id
+  ]
+  networks_advanced {
+    name = docker_network.download.name
+  }
+}
