@@ -128,6 +128,54 @@ resource "docker_container" "sonarr" {
   }
 }
 
+resource "docker_image" "transmission" {
+  name = "lscr.io/linuxserver/transmission:latest"
+}
+
+resource "docker_volume" "transmission_config" {
+  name   = "transmission-config"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = "${var.DATA_HOME}/transmission"
+  }
+}
+
+resource "docker_container" "transmission" {
+  image = docker_image.transmission.image_id
+  name  = "transmission-tf"
+  env = [
+    "TZ=${var.TZ}",
+    "PUID=${var.PUID}",
+    "PGID=${var.PGID}",
+  ]
+  ports {
+    internal = 9091
+    external = 9091
+  }
+  ports {
+    internal = 51413
+    external = 51413
+  }
+  ports {
+    internal = 51413
+    external = 51413
+    protocol = "udp"
+  }
+  networks_advanced {
+    name = docker_network.download.name
+  }
+  volumes {
+    volume_name    = docker_volume.transmission_config.name
+    container_path = "/config"
+  }
+  volumes {
+    volume_name    = docker_volume.download.name
+    container_path = "/downloads"
+  }
+}
+
 resource "random_password" "download_tunnel_secret" {
   length = 64
 }
@@ -216,6 +264,32 @@ resource "cloudflare_access_policy" "sonarr" {
   }
 }
 
+resource "cloudflare_record" "transmission" {
+  zone_id = var.CF_ZONE_ID
+  name    = "download"
+  value   = cloudflare_tunnel.download_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_access_application" "transmission" {
+  zone_id          = var.CF_ZONE_ID
+  name             = "Access application for ${cloudflare_record.transmission.hostname}"
+  domain           = cloudflare_record.transmission.hostname
+  session_duration = "1h"
+}
+
+resource "cloudflare_access_policy" "transmission" {
+  application_id = cloudflare_access_application.transmission.id
+  zone_id        = var.CF_ZONE_ID
+  name           = "Policy for ${cloudflare_record.transmission.hostname}"
+  precedence     = "1"
+  decision       = "allow"
+  include {
+    email = [var.CF_EMAIL]
+  }
+}
+
 resource "cloudflare_tunnel_config" "download_tunnel" {
   tunnel_id  = cloudflare_tunnel.download_tunnel.id
   account_id = var.CF_ACCOUNT_ID
@@ -231,6 +305,10 @@ resource "cloudflare_tunnel_config" "download_tunnel" {
     ingress_rule {
       hostname = cloudflare_record.sonarr.hostname
       service  = "http://${docker_container.sonarr.name}:8989"
+    }
+    ingress_rule {
+      hostname = cloudflare_record.transmission.hostname
+      service  = "http://${docker_container.transmission.name}:9091"
     }
     ingress_rule {
       service = "http_status:404"
