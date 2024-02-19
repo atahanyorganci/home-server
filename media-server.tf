@@ -12,6 +12,16 @@ resource "docker_image" "jellyfin" {
   name = "lscr.io/linuxserver/jellyfin:latest"
 }
 
+resource "docker_volume" "jellyfin_config" {
+  name   = "jellyfin-config"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = "${var.DATA_HOME}/jellyfin"
+  }
+}
+
 resource "docker_container" "jellyfin" {
   image = docker_image.jellyfin.image_id
   name  = var.media_server_name
@@ -34,8 +44,7 @@ resource "docker_container" "jellyfin" {
     container_path = "/data/tvshows"
   }
   volumes {
-    volume_name    = "jellyin-config"
-    host_path      = "${var.DATA_HOME}/jellyfin"
+    volume_name    = docker_volume.jellyfin_config.name
     container_path = "/config"
   }
 }
