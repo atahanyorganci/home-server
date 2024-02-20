@@ -68,7 +68,7 @@ resource "cloudflare_tunnel" "media_tunnel" {
   secret     = base64sha256(random_password.media_tunnel_secret.result)
 }
 
-resource "cloudflare_record" "watch" {
+resource "cloudflare_record" "jellyfin" {
   zone_id = var.CF_ZONE_ID
   name    = "watch"
   value   = cloudflare_tunnel.media_tunnel.cname
@@ -81,7 +81,7 @@ resource "cloudflare_tunnel_config" "media_tunnel" {
   account_id = var.CF_ACCOUNT_ID
   config {
     ingress_rule {
-      hostname = cloudflare_record.watch.hostname
+      hostname = cloudflare_record.jellyfin.hostname
       service  = "http://${var.media_server_name}:8096"
     }
     ingress_rule {
