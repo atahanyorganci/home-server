@@ -35,10 +35,6 @@ resource "docker_container" "prowlarr" {
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
   ]
-  ports {
-    internal = 9696
-    external = 9696
-  }
   networks_advanced {
     name = docker_network.download.name
   }
@@ -70,10 +66,6 @@ resource "docker_container" "radarr" {
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
   ]
-  ports {
-    internal = 7878
-    external = 7878
-  }
   networks_advanced {
     name = docker_network.download.name
   }
@@ -113,10 +105,6 @@ resource "docker_container" "sonarr" {
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
   ]
-  ports {
-    internal = 8989
-    external = 8989
-  }
   networks_advanced {
     name = docker_network.download.name
   }
@@ -156,19 +144,6 @@ resource "docker_container" "transmission" {
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
   ]
-  ports {
-    internal = 9091
-    external = 9091
-  }
-  ports {
-    internal = 51413
-    external = 51413
-  }
-  ports {
-    internal = 51413
-    external = 51413
-    protocol = "udp"
-  }
   networks_advanced {
     name = docker_network.download.name
   }
