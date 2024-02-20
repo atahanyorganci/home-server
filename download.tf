@@ -4,7 +4,13 @@ resource "docker_network" "download" {
 }
 
 resource "docker_volume" "download" {
-  name = "download"
+  name   = "download"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = var.DOWNLOAD_HOME
+  }
 }
 
 resource "docker_image" "prowlarr" {
