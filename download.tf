@@ -3,8 +3,8 @@ resource "docker_network" "download" {
   driver = "bridge"
 }
 
-resource "docker_volume" "download" {
-  name   = "download"
+resource "docker_volume" "download_home" {
+  name   = "download-home"
   driver = "local"
   driver_opts = {
     type   = "none"
@@ -17,8 +17,8 @@ resource "docker_image" "prowlarr" {
   name = "lscr.io/linuxserver/prowlarr:latest"
 }
 
-resource "docker_volume" "prowlarr_config" {
-  name   = "prowlarr-config"
+resource "docker_volume" "prowlarr_data" {
+  name   = "prowlarr-data"
   driver = "local"
   driver_opts = {
     type   = "none"
@@ -29,7 +29,7 @@ resource "docker_volume" "prowlarr_config" {
 
 resource "docker_container" "prowlarr" {
   image = docker_image.prowlarr.image_id
-  name  = "prowlarr-tf"
+  name  = "prowlarr"
   env = [
     "TZ=${var.TZ}",
     "PUID=${var.PUID}",
@@ -39,7 +39,7 @@ resource "docker_container" "prowlarr" {
     name = docker_network.download.name
   }
   volumes {
-    volume_name    = docker_volume.prowlarr_config.name
+    volume_name    = docker_volume.prowlarr_data.name
     container_path = "/config"
   }
 }
@@ -48,8 +48,8 @@ resource "docker_image" "radarr" {
   name = "lscr.io/linuxserver/radarr:latest"
 }
 
-resource "docker_volume" "radarr_config" {
-  name   = "radarr-config"
+resource "docker_volume" "radarr_data" {
+  name   = "radarr-data"
   driver = "local"
   driver_opts = {
     type   = "none"
@@ -60,7 +60,7 @@ resource "docker_volume" "radarr_config" {
 
 resource "docker_container" "radarr" {
   image = docker_image.radarr.image_id
-  name  = "radarr-tf"
+  name  = "radarr"
   env = [
     "TZ=${var.TZ}",
     "PUID=${var.PUID}",
@@ -70,11 +70,11 @@ resource "docker_container" "radarr" {
     name = docker_network.download.name
   }
   volumes {
-    volume_name    = docker_volume.radarr_config.name
+    volume_name    = docker_volume.radarr_data.name
     container_path = "/config"
   }
   volumes {
-    volume_name    = docker_volume.download.name
+    volume_name    = docker_volume.download_home.name
     container_path = "/downloads"
   }
   volumes {
@@ -87,8 +87,8 @@ resource "docker_image" "sonarr" {
   name = "lscr.io/linuxserver/sonarr:latest"
 }
 
-resource "docker_volume" "sonarr_config" {
-  name   = "sonarr-config"
+resource "docker_volume" "sonarr_data" {
+  name   = "sonarr-data"
   driver = "local"
   driver_opts = {
     type   = "none"
@@ -99,7 +99,7 @@ resource "docker_volume" "sonarr_config" {
 
 resource "docker_container" "sonarr" {
   image = docker_image.sonarr.image_id
-  name  = "sonarr-tf"
+  name  = "sonarr"
   env = [
     "TZ=${var.TZ}",
     "PUID=${var.PUID}",
@@ -109,11 +109,11 @@ resource "docker_container" "sonarr" {
     name = docker_network.download.name
   }
   volumes {
-    volume_name    = docker_volume.sonarr_config.name
+    volume_name    = docker_volume.sonarr_data.name
     container_path = "/config"
   }
   volumes {
-    volume_name    = docker_volume.download.name
+    volume_name    = docker_volume.download_home.name
     container_path = "/downloads"
   }
   volumes {
@@ -126,8 +126,8 @@ resource "docker_image" "transmission" {
   name = "lscr.io/linuxserver/transmission:latest"
 }
 
-resource "docker_volume" "transmission_config" {
-  name   = "transmission-config"
+resource "docker_volume" "transmission_data" {
+  name   = "transmission-data"
   driver = "local"
   driver_opts = {
     type   = "none"
@@ -138,7 +138,7 @@ resource "docker_volume" "transmission_config" {
 
 resource "docker_container" "transmission" {
   image = docker_image.transmission.image_id
-  name  = "transmission-tf"
+  name  = "transmission"
   env = [
     "TZ=${var.TZ}",
     "PUID=${var.PUID}",
@@ -148,11 +148,11 @@ resource "docker_container" "transmission" {
     name = docker_network.download.name
   }
   volumes {
-    volume_name    = docker_volume.transmission_config.name
+    volume_name    = docker_volume.transmission_data.name
     container_path = "/config"
   }
   volumes {
-    volume_name    = docker_volume.download.name
+    volume_name    = docker_volume.download_home.name
     container_path = "/downloads"
   }
 }
@@ -162,7 +162,7 @@ resource "random_password" "download_tunnel_secret" {
 }
 
 resource "cloudflare_tunnel" "download_tunnel" {
-  name       = "Arr Stack"
+  name       = "ArrStack"
   account_id = var.CF_ACCOUNT_ID
   secret     = base64sha256(random_password.download_tunnel_secret.result)
 }

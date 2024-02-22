@@ -3,7 +3,7 @@ resource "docker_image" "homepage" {
 }
 
 resource "docker_volume" "homepage_config" {
-  name   = "homepage_config"
+  name   = "homepage-config"
   driver = "local"
   driver_opts = {
     type   = "none"
@@ -13,7 +13,7 @@ resource "docker_volume" "homepage_config" {
 }
 
 resource "docker_volume" "homepage_assets" {
-  name   = "homepage_data"
+  name   = "homepage-assets"
   driver = "local"
   driver_opts = {
     type   = "none"
