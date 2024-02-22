@@ -49,6 +49,10 @@ resource "docker_container" "jellyfin" {
   }
 }
 
+locals {
+  media_server_interal_url = "http://${var.media_server_name}:8096"
+}
+
 resource "docker_container" "media_tunnel" {
   image   = docker_image.cloudflared.image_id
   name    = "cloudflared-tf"
@@ -82,7 +86,7 @@ resource "cloudflare_tunnel_config" "media_tunnel" {
   config {
     ingress_rule {
       hostname = cloudflare_record.jellyfin.hostname
-      service  = "http://${var.media_server_name}:8096"
+      service  = local.media_server_interal_url
     }
     ingress_rule {
       service = "http_status:404"

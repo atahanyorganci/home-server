@@ -60,3 +60,28 @@ variable "CF_ZONE_ID" {
   description = "Cloudflare zone ID."
   type        = string
 }
+
+variable "JELLYIN_API_KEY" {
+  description = "The API key to use for the media server."
+  type        = string
+  sensitive   = true
+}
+
+variable "PROWLARR_API_KEY" {
+  description = "The API key to use for Prowlarr."
+  type        = string
+  sensitive   = true
+}
+
+
+variable "RADARR_API_KEY" {
+  description = "The API key to use for Radarr."
+  type        = string
+  sensitive   = true
+}
+
+variable "SONARR_API_KEY" {
+  description = "The API key to use for Sonarr."
+  type        = string
+  sensitive   = true
+}

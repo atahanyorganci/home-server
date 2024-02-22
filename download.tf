@@ -271,25 +271,32 @@ resource "cloudflare_access_policy" "transmission" {
   }
 }
 
+locals {
+  prowlarr_internal_url     = "http://${docker_container.prowlarr.name}:9696"
+  radarr_internal_url       = "http://${docker_container.radarr.name}:7878"
+  sonarr_internal_url       = "http://${docker_container.sonarr.name}:8989"
+  transmission_internal_url = "http://${docker_container.transmission.name}:9091"
+}
+
 resource "cloudflare_tunnel_config" "download_tunnel" {
   tunnel_id  = cloudflare_tunnel.download_tunnel.id
   account_id = var.CF_ACCOUNT_ID
   config {
     ingress_rule {
       hostname = cloudflare_record.prowlarr.hostname
-      service  = "http://${docker_container.prowlarr.name}:9696"
+      service  = local.prowlarr_internal_url
     }
     ingress_rule {
       hostname = cloudflare_record.radarr.hostname
-      service  = "http://${docker_container.radarr.name}:7878"
+      service  = local.radarr_internal_url
     }
     ingress_rule {
       hostname = cloudflare_record.sonarr.hostname
-      service  = "http://${docker_container.sonarr.name}:8989"
+      service  = local.sonarr_internal_url
     }
     ingress_rule {
       hostname = cloudflare_record.transmission.hostname
-      service  = "http://${docker_container.transmission.name}:9091"
+      service  = local.transmission_internal_url
     }
     ingress_rule {
       service = "http_status:404"
