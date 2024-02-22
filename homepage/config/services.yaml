@@ -1,0 +1,76 @@
+- MediaServer:
+    - Jellyfin:
+        icon: jellyfin.svg
+        href: "{{HOMEPAGE_VAR_JELLYFIN_PUBLIC_URL}}"
+        description: Watch TV shows and movies
+        widget:
+            type: jellyfin
+            url: "{{HOMEPAGE_VAR_JELLYFIN_INTERNAL_URL}}"
+            key: "{{HOMEPAGE_VAR_JELLYFIN_API_KEY}}"
+            enableBlocks: true
+            enableNowPlaying: true
+- Calendar:
+    - "":
+        widget:
+            type: calendar
+            view: monthly
+            maxEvents: 10
+            showTime: true
+            timezone: Europe/Amsterdam
+- ArrStack:
+    - Prowlarr:
+        icon: prowlarr.svg
+        description: Torrent indexer
+        href: "{{HOMEPAGE_VAR_PROWLARR_PUBLIC_URL}}"
+        siteMonitor: "{{HOMEPAGE_VAR_PROWLARR_INTERNAL_URL}}"
+        widget:
+            type: prowlarr
+            fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs", "numberOfFailQueries"]
+            url: "{{HOMEPAGE_VAR_PROWLARR_INTERNAL_URL}}"
+            key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
+    - Sonarr:
+        icon: sonarr.svg
+        description: TV series manager
+        href: "{{HOMEPAGE_VAR_SONARR_PUBLIC_URL}}"
+        siteMonitor: "{{HOMEPAGE_VAR_SONARR_INTERNAL_URL}}"
+        widget:
+            type: sonarr
+            fields: ["wanted", "queued", "series"]
+            url: "{{HOMEPAGE_VAR_SONARR_INTERNAL_URL}}"
+            key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
+    - Radarr:
+        icon: radarr.svg
+        description: Movie manager
+        href: "{{HOMEPAGE_VAR_RADARR_PUBLIC_URL}}"
+        siteMonitor: "{{HOMEPAGE_VAR_RADARR_INTERNAL_URL}}"
+        widget:
+            type: radarr
+            fields:  ["wanted", "missing", "queued", "movies"]
+            url: "{{HOMEPAGE_VAR_RADARR_INTERNAL_URL}}"
+            key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
+    - Transmission:
+        icon: transmission.svg
+        description: Torrent client
+        href: "{{HOMEPAGE_VAR_TRANSMISSION_PUBLIC_URL}}"
+        siteMonitor: "{{HOMEPAGE_VAR_TRANSMISSION_INTERNAL_URL}}"
+        widget:
+            type: transmission
+            fields: ["leech", "download", "seed", "upload"]
+            url: "{{HOMEPAGE_VAR_TRANSMISSION_INTERNAL_URL}}"
+- Cloudflare:
+    - MediaTunnel:
+        icon: cloudflare.svg
+        description: Status of MediaTunnel
+        widget:
+            type: cloudflared
+            accountid: "{{HOMEPAGE_VAR_CF_ACCOUNT_ID}}"
+            tunnelid: "{{HOMEPAGE_VAR_MEDIA_TUNNEL_ID}}"
+            key: "{{HOMEPAGE_VAR_CF_API_KEY}}"
+    - DownloadTunnel:
+        icon: cloudflare.svg
+        description: Status of DownloadTunnel
+        widget:
+            type: cloudflared
+            accountid: "{{HOMEPAGE_VAR_CF_ACCOUNT_ID}}"
+            tunnelid: "{{HOMEPAGE_VAR_DOWNLOAD_TUNNEL_ID}}"
+            key: "{{HOMEPAGE_VAR_CF_API_KEY}}"

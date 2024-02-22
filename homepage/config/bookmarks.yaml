@@ -1,0 +1,16 @@
+---
+- Source Code:
+    - GitHub:
+        - icon: github.svg
+          href: https://github.com/
+- Terraform:
+    - Docs:
+        - icon: terraform.svg
+          href: https://developer.hashicorp.com/terraform/docs
+    - Providers:
+        - icon: terraform.svg
+          href: https://registry.terraform.io/
+- "Cloudflare ":
+    - Dashboard:
+        - icon: cloudflare.svg
+          href: https://dash.cloudflare.com/

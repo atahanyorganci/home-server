@@ -1,0 +1,26 @@
+title: "YorganciLabs"
+disableCollapse: true
+theme: dark
+color: zinc
+showStats: true
+logpath: /tmp/homepage.logs
+background:
+  image: /assets/background.jpg
+  saturate: 50
+  brightness: 50
+  opacity: 50
+layout:
+  - Calendar:
+      header: false
+      columns: 2
+  - MediaServer:
+      header: false
+      columns: 2
+  - ArrStack:
+      header: true
+      style: row
+      columns: 4
+  - Cloudflare:
+      header: true
+      style: row
+      columns: 4

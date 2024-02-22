@@ -1,0 +1,13 @@
+---
+- resources:
+    label: CPU
+    cpu: true
+    cputemp: true
+- resources:
+    label: RAM
+    memory: true
+- resources:
+    label: Disk
+    disk: /
+- search:
+    provider: duckduckgo
