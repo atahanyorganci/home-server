@@ -22,6 +22,19 @@ resource "docker_volume" "homepage_assets" {
   }
 }
 
+data "cloudflare_api_token_permission_groups" "all" {}
+
+resource "cloudflare_api_token" "tunnel_readonly" {
+  name = "TunnelReadonly"
+  policy {
+    permission_groups = [
+      data.cloudflare_api_token_permission_groups.all.account["Argo Tunnel Read"]
+    ]
+    resources = {
+      "com.cloudflare.api.account.${var.CF_ACCOUNT_ID}" = "*"
+    }
+  }
+}
 resource "local_file" "homepage_config_files" {
   for_each = fileset("./homepage/config", "*")
   filename = "${var.DATA_HOME}/homepage/config/${each.key}"
@@ -50,6 +63,10 @@ locals {
     SONARR_API_KEY            = var.SONARR_API_KEY
     TRANSMISSION_PUBLIC_URL   = "https://${cloudflare_record.transmission.hostname}"
     TRANSMISSION_INTERNAL_URL = local.transmission_internal_url
+    MEDIA_TUNNEL_ID           = cloudflare_tunnel.media_tunnel.id
+    DOWNLOAD_TUNNEL_ID        = cloudflare_tunnel.download_tunnel.id
+    CF_ACCOUNT_ID             = var.CF_ACCOUNT_ID
+    CF_API_KEY                = cloudflare_api_token.tunnel_readonly.value
   }
   homepage_env = [for k, v in local.homepage_env_map : "HOMEPAGE_VAR_${k}=${v}"]
 }
