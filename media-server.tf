@@ -24,6 +24,7 @@ resource "docker_container" "jellyfin" {
     "TZ=${var.TZ}",
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
+    "DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel",
   ]
   networks_advanced {
     name = docker_network.media.name
@@ -41,6 +42,10 @@ resource "docker_container" "jellyfin" {
   volumes {
     volume_name    = docker_volume.jellyfin_data.name
     container_path = "/config"
+  }
+  devices {
+    host_path      = "/dev/dri/renderD128"
+    container_path = "/dev/dri/renderD128"
   }
 }
 
