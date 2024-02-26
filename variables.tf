@@ -41,6 +41,11 @@ variable "BOOK_HOME" {
   type        = string
 }
 
+variable "AUDIOBOOK_HOME" {
+  description = "The path to the audiobook library."
+  type        = string
+}
+
 variable "DATA_HOME" {
   description = "The path to the data directory where application state will be stored."
   type        = string

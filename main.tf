@@ -59,3 +59,13 @@ resource "docker_volume" "book_home" {
     device = "${var.BOOK_HOME}"
   }
 }
+
+resource "docker_volume" "audiobook_home" {
+  name   = "audiobook-home"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = "${var.AUDIOBOOK_HOME}"
+  }
+}
