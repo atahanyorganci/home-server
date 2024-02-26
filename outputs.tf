@@ -32,3 +32,15 @@ output "download" {
     ]
   }
 }
+
+output "library" {
+  value = {
+    tunnel = {
+      id    = cloudflare_tunnel.library_tunnel.id
+      name  = cloudflare_tunnel.library_tunnel.name
+      cname = cloudflare_tunnel.library_tunnel.cname
+    }
+    cname      = [cloudflare_record.calibre_web.hostname, cloudflare_record.audiobookshelf.hostname]
+    containers = [docker_container.calibre_web.name, docker_container.audiobookshelf.name, docker_container.library_tunnel.name]
+  }
+}
