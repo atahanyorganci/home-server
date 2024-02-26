@@ -1,3 +1,8 @@
+resource "docker_network" "library" {
+  name   = "library"
+  driver = "bridge"
+}
+
 resource "docker_image" "calibre_web" {
   name = "lscr.io/linuxserver/calibre-web:latest"
 }
@@ -20,9 +25,8 @@ resource "docker_container" "calibre_web" {
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
   ]
-  ports {
-    internal = 8083
-    external = 8083
+  networks_advanced {
+    name = docker_network.library.name
   }
   volumes {
     volume_name    = docker_volume.calibre_web_data.name
@@ -66,9 +70,8 @@ resource "docker_container" "audiobookshelf" {
     "PUID=${var.PUID}",
     "PGID=${var.PGID}",
   ]
-  ports {
-    internal = 80
-    external = 13378
+  networks_advanced {
+    name = docker_network.library.name
   }
   volumes {
     volume_name    = docker_volume.audiobookshelf_config.name
@@ -81,5 +84,70 @@ resource "docker_container" "audiobookshelf" {
   volumes {
     volume_name    = docker_volume.audiobook_home.name
     container_path = "/audiobooks"
+  }
+}
+
+locals {
+  calibre_web_internal_url    = "http://${docker_container.calibre_web.name}:8083"
+  audiobookshelf_internal_url = "http://${docker_container.audiobookshelf.name}:80"
+}
+
+resource "random_password" "library_tunnel_secret" {
+  length = 64
+}
+
+resource "cloudflare_tunnel" "library_tunnel" {
+  name       = "LibraryServer"
+  account_id = var.CF_ACCOUNT_ID
+  secret     = base64sha256(random_password.library_tunnel_secret.result)
+}
+
+resource "cloudflare_record" "calibre_web" {
+  zone_id = var.CF_ZONE_ID
+  name    = "library"
+  value   = cloudflare_tunnel.library_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_record" "audiobookshelf" {
+  zone_id = var.CF_ZONE_ID
+  name    = "audiobooks"
+  value   = cloudflare_tunnel.library_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_tunnel_config" "library_tunnel" {
+  tunnel_id  = cloudflare_tunnel.library_tunnel.id
+  account_id = var.CF_ACCOUNT_ID
+  config {
+    ingress_rule {
+      hostname = cloudflare_record.calibre_web.hostname
+      service  = local.calibre_web_internal_url
+    }
+    ingress_rule {
+      hostname = cloudflare_record.audiobookshelf.hostname
+      service  = local.audiobookshelf_internal_url
+    }
+    ingress_rule {
+      service = "http_status:404"
+    }
+  }
+}
+
+resource "docker_container" "library_tunnel" {
+  image = docker_image.cloudflared.image_id
+  name  = "library-tunnel"
+  command = [
+    "tunnel",
+    "--no-autoupdate",
+    "run",
+    "--token",
+    cloudflare_tunnel.library_tunnel.tunnel_token,
+    cloudflare_tunnel.library_tunnel.id
+  ]
+  networks_advanced {
+    name = docker_network.library.name
   }
 }
