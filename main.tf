@@ -49,3 +49,13 @@ resource "docker_volume" "tv_home" {
     device = var.TV_HOME
   }
 }
+
+resource "docker_volume" "book_home" {
+  name   = "book-home"
+  driver = "local"
+  driver_opts = {
+    type   = "none"
+    o      = "bind"
+    device = "${var.BOOK_HOME}"
+  }
+}
