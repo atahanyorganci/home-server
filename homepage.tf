@@ -1,3 +1,8 @@
+resource "docker_network" "dashboard" {
+  name   = "dashboard"
+  driver = "bridge"
+}
+
 resource "docker_image" "homepage" {
   name = "ghcr.io/gethomepage/homepage:latest"
 }
@@ -74,10 +79,6 @@ locals {
 resource "docker_container" "homepage" {
   name  = "homepage"
   image = docker_image.homepage.image_id
-  ports {
-    internal = 3000
-    external = 3000
-  }
   volumes {
     volume_name    = docker_volume.homepage_config.name
     container_path = "/app/config"
@@ -87,10 +88,70 @@ resource "docker_container" "homepage" {
     container_path = "/app/public/assets"
   }
   networks_advanced {
+    name = docker_network.dashboard.name
+  }
+  networks_advanced {
     name = docker_network.media.name
   }
   networks_advanced {
     name = docker_network.download.name
   }
   env = concat(local.homepage_env, ["PUID=${var.PUID}", "PGID=${var.PGID}"])
+  depends_on = [
+    local_file.homepage_assets,
+    local_file.homepage_config_files,
+  ]
+}
+
+locals {
+  homepage_internal_url = "http://${docker_container.homepage.name}:3000"
+}
+
+resource "random_password" "dashboard_tunnel_secret" {
+  length = 64
+}
+
+resource "cloudflare_tunnel" "dashboard_tunnel" {
+  name       = "DashboardServer"
+  account_id = var.CF_ACCOUNT_ID
+  secret     = base64sha256(random_password.dashboard_tunnel_secret.result)
+}
+
+resource "cloudflare_record" "homepage" {
+  zone_id = var.CF_ZONE_ID
+  name    = "dash"
+  value   = cloudflare_tunnel.dashboard_tunnel.cname
+  type    = "CNAME"
+  proxied = true
+}
+
+resource "cloudflare_tunnel_config" "dashboard_tunnel" {
+  tunnel_id  = cloudflare_tunnel.dashboard_tunnel.id
+  account_id = var.CF_ACCOUNT_ID
+  config {
+    ingress_rule {
+      hostname = cloudflare_record.homepage.hostname
+      service  = local.homepage_internal_url
+    }
+    ingress_rule {
+      service = "http_status:404"
+    }
+  }
+}
+
+resource "docker_container" "dashboard_tunnel" {
+  image = docker_image.cloudflared.image_id
+  name  = "dashboard-tunnel"
+  command = [
+    "tunnel",
+    "--no-autoupdate",
+    "run",
+    "--token",
+    cloudflare_tunnel.dashboard_tunnel.tunnel_token,
+    cloudflare_tunnel.dashboard_tunnel.id
+  ]
+  networks_advanced {
+    name = docker_network.dashboard.name
+  }
+  depends_on = [docker_container.homepage]
 }
