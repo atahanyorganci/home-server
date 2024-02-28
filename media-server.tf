@@ -56,6 +56,7 @@ resource "docker_container" "media_tunnel" {
   networks_advanced {
     name = docker_network.media.name
   }
+  depends_on = [docker_container.jellyfin]
 }
 
 resource "random_password" "media_tunnel_secret" {

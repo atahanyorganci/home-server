@@ -150,4 +150,5 @@ resource "docker_container" "library_tunnel" {
   networks_advanced {
     name = docker_network.library.name
   }
+  depends_on = [docker_container.calibre_web, docker_container.audiobookshelf]
 }

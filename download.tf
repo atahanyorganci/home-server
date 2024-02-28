@@ -81,6 +81,7 @@ resource "docker_container" "radarr" {
     volume_name    = docker_volume.movie_home.name
     container_path = "/movies"
   }
+  depends_on = [docker_container.prowlarr, docker_container.transmission]
 }
 
 resource "docker_image" "sonarr" {
@@ -120,6 +121,7 @@ resource "docker_container" "sonarr" {
     volume_name    = docker_volume.tv_home.name
     container_path = "/tv"
   }
+  depends_on = [docker_container.prowlarr, docker_container.transmission]
 }
 
 resource "docker_image" "transmission" {
@@ -304,7 +306,6 @@ resource "cloudflare_tunnel_config" "download_tunnel" {
   }
 }
 
-
 resource "docker_container" "download_tunnel" {
   image = docker_image.cloudflared.image_id
   name  = "download-tunnel"
@@ -319,4 +320,10 @@ resource "docker_container" "download_tunnel" {
   networks_advanced {
     name = docker_network.download.name
   }
+  depends_on = [
+    cloudflare_access_application.prowlarr,
+    cloudflare_access_application.radarr,
+    cloudflare_access_application.sonarr,
+    cloudflare_access_application.transmission
+  ]
 }
