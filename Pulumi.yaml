@@ -1,0 +1,7 @@
+name: home-stack
+runtime: nodejs
+description: A minimal Random TypeScript Pulumi program.
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: ""

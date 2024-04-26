@@ -1,2 +1,8 @@
 [env]
 '_'.file = ".env"
+
+[tools]
+pulumi = "latest"
+
+[plugins]
+pulumi = "https://github.com/canha/asdf-pulumi"

@@ -1,0 +1,28 @@
+{
+  "name": "home-stack",
+  "main": "index.ts",
+  "scripts": {
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.113.0",
+    "@pulumi/random": "^4.13.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "prettier": "^3.2.5",
+    "prettier-plugin-organize-imports": "^3.2.4"
+  },
+  "prettier": {
+    "semi": true,
+    "tabWidth": 2,
+    "printWidth": 100,
+    "arrowParens": "avoid",
+    "trailingComma": "all",
+    "organizeImportsSkipDestructiveCodeActions": true,
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ]
+  }
+}
