@@ -1,8 +1,2 @@
 [env]
 '_'.file = ".env"
-
-[tools]
-terraform = "1.7.3"
-
-[plugins]
-terraform = "https://github.com/asdf-community/asdf-hashicorp"
