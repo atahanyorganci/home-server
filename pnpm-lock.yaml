@@ -5,15 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@pulumi/docker':
+    specifier: ^4.5.3
+    version: 4.5.3(typescript@5.4.5)
   '@pulumi/pulumi':
     specifier: ^3.113.0
     version: 3.113.3(typescript@5.4.5)
-  '@pulumi/random':
-    specifier: ^4.13.0
-    version: 4.16.1(typescript@5.4.5)
   typescript:
     specifier: ^5.0.0
     version: 5.4.5
+  zod:
+    specifier: ^3.23.4
+    version: 3.23.4
 
 devDependencies:
   '@types/node':
@@ -436,6 +439,18 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
+  /@pulumi/docker@4.5.3(typescript@5.4.5):
+    resolution: {integrity: sha512-chHRNGzmpdskxJt0MvD0Mt3x4v9zYTssRoGNGCpkVCnicYSV8CUi26J1b6svp+aWK4RNrqmD1ohFHHXIVtSxjA==}
+    dependencies:
+      '@pulumi/pulumi': 3.113.3(typescript@5.4.5)
+      semver: 5.7.2
+    transitivePeerDependencies:
+      - bluebird
+      - supports-color
+      - ts-node
+      - typescript
+    dev: false
+
   /@pulumi/pulumi@3.113.3(typescript@5.4.5):
     resolution: {integrity: sha512-q7Agc4nkIKNuoOmzIvmvbH3axIkdhEbVA+GPlosRM0MUJkJdRlU82hO4EGBhkyGbBPbLWvirqCjXOAQ66LgCfg==}
     engines: {node: '>=18'}
@@ -486,17 +501,6 @@ packages:
 
   /@pulumi/query@0.3.0:
     resolution: {integrity: sha512-xfo+yLRM2zVjVEA4p23IjQWzyWl1ZhWOGobsBqRpIarzLvwNH/RAGaoehdxlhx4X92302DrpdIFgTICMN4P38w==}
-    dev: false
-
-  /@pulumi/random@4.16.1(typescript@5.4.5):
-    resolution: {integrity: sha512-WbjxA7rqOqJkDT4mEltQkJ97GGjCLHJ6e/8r/HRdpoJ4xapfqgAVdt4/dgVtHBsxngglNkauL2uOy/h4Jh1Arg==}
-    dependencies:
-      '@pulumi/pulumi': 3.113.3(typescript@5.4.5)
-    transitivePeerDependencies:
-      - bluebird
-      - supports-color
-      - ts-node
-      - typescript
     dev: false
 
   /@sigstore/bundle@2.3.1:
@@ -1707,6 +1711,11 @@ packages:
     dev: false
     optional: true
 
+  /semver@5.7.2:
+    resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
+    hasBin: true
+    dev: false
+
   /semver@7.6.0:
     resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
     engines: {node: '>=10'}
@@ -2027,4 +2036,8 @@ packages:
   /yocto-queue@1.0.0:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
+    dev: false
+
+  /zod@3.23.4:
+    resolution: {integrity: sha512-/AtWOKbBgjzEYYQRNfoGKHObgfAZag6qUJX1VbHo2PRBgS+wfWagEY2mizjfyAPcGesrJOcx/wcl0L9WnVrHFw==}
     dev: false
