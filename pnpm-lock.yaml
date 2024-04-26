@@ -5,12 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@pulumi/cloudflare':
+    specifier: ^5.26.0
+    version: 5.26.0(typescript@5.4.5)
   '@pulumi/docker':
     specifier: ^4.5.3
     version: 4.5.3(typescript@5.4.5)
   '@pulumi/pulumi':
     specifier: ^3.113.0
     version: 3.113.3(typescript@5.4.5)
+  '@pulumi/random':
+    specifier: ^4.16.1
+    version: 4.16.1(typescript@5.4.5)
   typescript:
     specifier: ^5.0.0
     version: 5.4.5
@@ -439,6 +445,17 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
+  /@pulumi/cloudflare@5.26.0(typescript@5.4.5):
+    resolution: {integrity: sha512-M9TXQTn/3QllxG/oxWvVUzCkmSL520QH4WIK0Ua/4zy0y2e/mYf+klB7Sg0vLhLpUG2ZtcBdxInl4eUIgizExw==}
+    dependencies:
+      '@pulumi/pulumi': 3.113.3(typescript@5.4.5)
+    transitivePeerDependencies:
+      - bluebird
+      - supports-color
+      - ts-node
+      - typescript
+    dev: false
+
   /@pulumi/docker@4.5.3(typescript@5.4.5):
     resolution: {integrity: sha512-chHRNGzmpdskxJt0MvD0Mt3x4v9zYTssRoGNGCpkVCnicYSV8CUi26J1b6svp+aWK4RNrqmD1ohFHHXIVtSxjA==}
     dependencies:
@@ -501,6 +518,17 @@ packages:
 
   /@pulumi/query@0.3.0:
     resolution: {integrity: sha512-xfo+yLRM2zVjVEA4p23IjQWzyWl1ZhWOGobsBqRpIarzLvwNH/RAGaoehdxlhx4X92302DrpdIFgTICMN4P38w==}
+    dev: false
+
+  /@pulumi/random@4.16.1(typescript@5.4.5):
+    resolution: {integrity: sha512-WbjxA7rqOqJkDT4mEltQkJ97GGjCLHJ6e/8r/HRdpoJ4xapfqgAVdt4/dgVtHBsxngglNkauL2uOy/h4Jh1Arg==}
+    dependencies:
+      '@pulumi/pulumi': 3.113.3(typescript@5.4.5)
+    transitivePeerDependencies:
+      - bluebird
+      - supports-color
+      - ts-node
+      - typescript
     dev: false
 
   /@sigstore/bundle@2.3.1:

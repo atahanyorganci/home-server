@@ -5,8 +5,10 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@pulumi/cloudflare": "^5.26.0",
     "@pulumi/docker": "^4.5.3",
     "@pulumi/pulumi": "^3.113.0",
+    "@pulumi/random": "^4.16.1",
     "typescript": "^5.0.0",
     "zod": "^3.23.4"
   },
