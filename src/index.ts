@@ -1,7 +1,7 @@
 import * as docker from "@pulumi/docker";
 import env from "./env";
-import { LocalVolume } from "./local";
-import Jellyfin, { ServiceTunnel } from "./media";
+import { LocalVolume, ServiceTunnel } from "./local";
+import Jellyfin from "./media";
 
 const tvHome = new LocalVolume("tv-home", env.TV_HOME);
 const movieHome = new LocalVolume("movie-home", env.MOVIE_HOME);
@@ -15,11 +15,12 @@ const serviceTunnel = new ServiceTunnel("service-tunnel", {
   services: [
     {
       domain: `media.${env.DOMAIN}`,
-      service: jellyfin.container.name.apply(n => `http://${n}:8096`) as unknown as string,
+      service: jellyfin.container.name.apply(n => `http://${n}:8096`),
     },
   ],
   network: jellyfin.network,
   image: cloudflaredImage,
+  env,
 });
 
 export const media = {
