@@ -2,9 +2,9 @@ import * as cloudflare from "@pulumi/cloudflare";
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
-import { LocalVolume } from "./docker";
 import type { Env } from "./env";
 import env from "./env";
+import { LocalVolume } from "./local";
 
 export interface JellyfinArgs {
   volumes: {

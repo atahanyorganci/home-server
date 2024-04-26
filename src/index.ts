@@ -1,6 +1,6 @@
 import * as docker from "@pulumi/docker";
-import { LocalVolume } from "./docker";
 import env from "./env";
+import { LocalVolume } from "./local";
 import Jellyfin, { ServiceTunnel } from "./media";
 
 const tvHome = new LocalVolume("tv-home", env.TV_HOME);
