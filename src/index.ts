@@ -1,4 +1,5 @@
 import * as docker from "@pulumi/docker";
+import DownloadStack from "./download";
 import env from "./env";
 import { LocalVolume } from "./local";
 import MediaStack from "./media";
@@ -23,3 +24,7 @@ export const mediaStack = {
     jellyfin: media.jellyfin.dataHome.driverOpts.apply(opts => opts?.device),
   },
 };
+
+const download = new DownloadStack("download", {
+  env,
+});
