@@ -1,7 +1,7 @@
 import * as docker from "@pulumi/docker";
 import env from "./env";
-import { LocalVolume, ServiceTunnel } from "./local";
-import Jellyfin from "./media";
+import { LocalVolume } from "./local";
+import MediaStack from "./media";
 
 const tvHome = new LocalVolume("tv-home", env.TV_HOME);
 const movieHome = new LocalVolume("movie-home", env.MOVIE_HOME);
@@ -10,21 +10,16 @@ const cloudflaredImage = new docker.RemoteImage("cloudflared", {
   keepLocally: true,
 });
 
-const jellyfin = new Jellyfin("jellyfin", { volumes: { tvHome, movieHome }, env });
-const serviceTunnel = new ServiceTunnel("service-tunnel", {
-  services: [
-    {
-      domain: `media.${env.DOMAIN}`,
-      service: jellyfin.container.name.apply(n => `http://${n}:8096`),
-    },
-  ],
-  network: jellyfin.network,
-  image: cloudflaredImage,
+const media = new MediaStack("media", {
   env,
+  volumes: { tvHome, movieHome },
+  image: cloudflaredImage,
 });
 
-export const media = {
-  services: serviceTunnel.tunnelConfig.config.ingressRules,
-  dataPath: jellyfin.dataHome.driverOpts.apply(t => t?.device),
-  containers: [jellyfin.container.name],
+export const mediaStack = {
+  containers: [media.jellyfin.container.name, media.serviceTunnel.container.name],
+  cname: [media.serviceTunnel.records.map(record => record.value)],
+  data: {
+    jellyfin: media.jellyfin.dataHome.driverOpts.apply(opts => opts?.device),
+  },
 };

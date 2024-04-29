@@ -1,7 +1,7 @@
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 import type { Env } from "./env";
-import { LocalVolume } from "./local";
+import { LocalVolume, ServiceTunnel, type ServiceTunnelArgs } from "./local";
 
 export interface JellyfinArgs {
   volumes: {
@@ -11,7 +11,7 @@ export interface JellyfinArgs {
   env: Pick<Env, "TZ" | "PUID" | "PGID" | "DATA_HOME">;
 }
 
-export default class Jellyfin extends pulumi.ComponentResource {
+export class Jellyfin extends pulumi.ComponentResource {
   public readonly dataHome: docker.Volume;
   public readonly image: docker.RemoteImage;
   public readonly network: docker.Network;
@@ -50,6 +50,39 @@ export default class Jellyfin extends pulumi.ComponentResource {
           "DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel",
         ],
         devices: [{ hostPath: "/dev/dri/renderD128", containerPath: "/dev/dri/renderD128" }],
+      },
+      { parent: this },
+    );
+  }
+}
+
+export type MediaTunnelArgs = Omit<ServiceTunnelArgs, "services" | "network">;
+export type MediaStackEnv = JellyfinArgs["env"] & ServiceTunnelArgs["env"] & Pick<Env, "DOMAIN">;
+
+export interface MediaStackArgs extends Omit<JellyfinArgs, "env">, Omit<MediaTunnelArgs, "env"> {
+  env: MediaStackEnv;
+}
+
+export default class MediaStack extends pulumi.ComponentResource {
+  public readonly jellyfin: Jellyfin;
+  public readonly serviceTunnel: ServiceTunnel;
+
+  constructor(name: string, args: MediaStackArgs, opts?: pulumi.ComponentResourceOptions) {
+    super("yorganci:MediaStack", name, {}, opts);
+
+    this.jellyfin = new Jellyfin(name, args, { parent: this });
+    this.serviceTunnel = new ServiceTunnel(
+      name,
+      {
+        env: args.env,
+        services: [
+          {
+            domain: `media.${args.env.DOMAIN}`,
+            service: this.jellyfin.container.name.apply(n => `http://${n}:8096`),
+          },
+        ],
+        network: this.jellyfin.network,
+        image: args.image,
       },
       { parent: this },
     );
