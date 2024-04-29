@@ -39,7 +39,7 @@ export class ServiceTunnel extends pulumi.ComponentResource {
   public readonly records: cloudflare.Record[];
   public readonly image: docker.RemoteImage;
   public readonly network: docker.Network;
-  public readonly cloudflared: docker.Container;
+  public readonly container: docker.Container;
 
   constructor(name: string, args: ServiceTunnelArgs, opts?: pulumi.ComponentResourceOptions) {
     super("yorganci:ServiceTunnel", name, {}, opts);
@@ -102,7 +102,7 @@ export class ServiceTunnel extends pulumi.ComponentResource {
       );
     this.network = args.network ?? new docker.Network(name, { name }, { parent: this });
 
-    this.cloudflared = new docker.Container(
+    this.container = new docker.Container(
       name,
       {
         image: this.image.imageId,
