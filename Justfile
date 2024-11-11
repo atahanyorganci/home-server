@@ -3,6 +3,9 @@ set export
 VARS_FILE := "env.tfvars"
 
 setup:
+    doppler whoami || doppler login
+    doppler setup --no-interactive
+
     mkdir -p data/audiobookshelf/config
     mkdir -p data/audiobookshelf/metadata
     mkdir -p data/calibre-web
@@ -12,6 +15,9 @@ setup:
     mkdir -p data/radarr
     mkdir -p data/sonarr
     mkdir -p data/transmission
+
+secret:
+    doppler secrets download --format env --no-file > $VARS_FILE
 
 init:
     terraform init
