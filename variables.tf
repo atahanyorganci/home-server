@@ -1,4 +1,3 @@
-
 variable "TZ" {
   description = "The time zone to use for the server."
   default     = "Etc/UTC"
