@@ -23,6 +23,7 @@
         default = pkgs.mkShell {
           buildInputs = with pkgs; [
             terraform
+            doppler
           ];
         };
       });
