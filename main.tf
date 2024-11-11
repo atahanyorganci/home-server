@@ -18,7 +18,7 @@ terraform {
 }
 
 provider "docker" {
-  host = "unix:///var/run/docker.sock"
+  host = var.DOCKER_HOST
 }
 
 provider "cloudflare" {

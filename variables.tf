@@ -94,3 +94,9 @@ variable "SONARR_API_KEY" {
   type        = string
   sensitive   = true
 }
+
+variable "DOCKER_HOST" {
+  description = "The host to use for the Docker provider."
+  type        = string
+  default     = "unix:///var/run/docker.sock"
+}
