@@ -24,6 +24,7 @@
           buildInputs = with pkgs; [
             terraform
             doppler
+            just
           ];
         };
       });
